@@ -516,3 +516,69 @@
 .trophy {
   font-size: 1.1rem;
 }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .App {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+  }
+
+  .offer-chart-card {
+    padding: 1rem;
+  }
+
+  .chart-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .chart-label-col {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .chart-offer-name {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: white;
+  }
+
+  .chart-legend {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .chart-summary {
+    gap: 0.75rem;
+  }
+
+  .summary-card {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .offer-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .toggles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .toggle-group {
+    width: 100%;
+  }
+
+  .chart-price-label {
+    font-size: 0.8rem;
+  }
+}
