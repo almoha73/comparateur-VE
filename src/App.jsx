@@ -148,6 +148,8 @@ function App() {
       let evCostRaw = 0;
       let evCostFinal = 0;
       let bonusMonthly = 0;
+      let overageMonthly = 0;
+      let refundMonthly = 0;
 
       // Details for optimization box
       let optKwh = evHC / 12;
@@ -211,7 +213,14 @@ function App() {
         normRate = offer.rates.hp;
         
         if (offer.flatRate > 0) {
-          evCostFinal = offer.flatRate * 12; // Drive Pack forfait
+          const annualFlatRate = offer.flatRate * 12;
+          if (evCostRaw < annualFlatRate) {
+            refundMonthly = (annualFlatRate - evCostRaw) / 12;
+            evCostFinal = annualFlatRate; // Monthly billing remains the flat rate
+          } else {
+            overageMonthly = (evCostRaw - annualFlatRate) / 12;
+            evCostFinal = evCostRaw; // Billing includes overage
+          }
         }
         if (offer.bonusType === 'intelligent') {
           let bonusRate = 0;
@@ -243,7 +252,14 @@ function App() {
         normRate = offer.rates.base;
 
         if (offer.flatRate > 0) {
-          evCostFinal = offer.flatRate * 12;
+          const annualFlatRate = offer.flatRate * 12;
+          if (evCostRaw < annualFlatRate) {
+            refundMonthly = (annualFlatRate - evCostRaw) / 12;
+            evCostFinal = annualFlatRate;
+          } else {
+            overageMonthly = (evCostRaw - annualFlatRate) / 12;
+            evCostFinal = evCostRaw;
+          }
         }
         if (offer.bonusType === 'intelligent') {
           let bonusRate = 0;
@@ -267,7 +283,7 @@ function App() {
 
       return {
         ...offer,
-        totalCost: cost,
+        totalCost: cost - (refundMonthly * 12),
         breakdown: {
           monthlySub,
           monthlyHomeCost: homeCost / 12,
@@ -276,7 +292,10 @@ function App() {
           monthlyEvCostFinal: evCostFinal / 12,
           monthlyEvKwh,
           monthlyBonus: bonusMonthly,
+          monthlyOverage: overageMonthly,
+          monthlyRefund: refundMonthly,
           monthlyTotal: cost / 12,
+          monthlyNetTotal: (cost / 12) - refundMonthly,
           optKwh,
           optRate,
           normKwh,

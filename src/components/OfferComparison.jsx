@@ -95,22 +95,31 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
 
               <div className="breakdown-row total">
                 <span>Total mensuel TTC</span>
-                <span>{bd.monthlyTotal.toFixed(2)} €</span>
+                <span style={{ textAlign: 'right' }}>
+                  <div>{bd.monthlyTotal.toFixed(2)} €</div>
+                  {bd.monthlyRefund > 0 && (
+                    <div style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 'normal', marginTop: '0.2rem' }}>
+                      ({bd.monthlyNetTotal.toFixed(2)} €/mois net)
+                    </div>
+                  )}
+                </span>
               </div>
 
               {offer.bonus > 0 && (
-                <div className="cagnotte-box">
-                  <div className="cagnotte-row" style={{ fontWeight: 'bold' }}>
-                    <span>Cagnotte de recharge</span>
-                    <span>+{bd.monthlyBonus.toFixed(2)} €</span>
+                <div className="cagnotte-box" style={{ padding: '0.75rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.5rem', marginTop: '1rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                  <div style={{ fontWeight: 'bold', color: '#34d399', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '0.5rem' }}>
+                    <span>🎁 Cagnotte de recharge</span>
+                    <span>+{bd.monthlyBonus.toFixed(2)} € / mois</span>
                   </div>
-                  <div className="cagnotte-row">
-                    <span>• HP : {bd.normKwh.toFixed(1)} kWh × {(bd.normRate - (offer.bonusHP || 0)).toFixed(4)} €</span>
-                    <span>={(bd.normKwh * (bd.normRate - (offer.bonusHP || 0))).toFixed(2)} €</span>
-                  </div>
-                  <div className="cagnotte-row">
-                    <span>• HC : {bd.optKwh.toFixed(1)} kWh × {(bd.optRate - offer.bonus).toFixed(4)} €</span>
-                    <span>={(bd.optKwh * (bd.optRate - offer.bonus)).toFixed(2)} €</span>
+                  <div style={{ fontSize: '0.85rem', color: '#10b981', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '0.2rem' }}>
+                      <span style={{ display: 'block' }}>• HC : {bd.optKwh.toFixed(0)} kWh × {offer.bonus.toFixed(4)} €</span>
+                      <span style={{ fontWeight: 'bold', display: 'block' }}>={(bd.optKwh * offer.bonus).toFixed(2)} €</span>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '0.2rem' }}>
+                      <span style={{ display: 'block' }}>• HP : {bd.normKwh.toFixed(0)} kWh × {(offer.bonusHP || 0).toFixed(4)} €</span>
+                      <span style={{ fontWeight: 'bold', display: 'block' }}>={(bd.normKwh * (offer.bonusHP || 0)).toFixed(2)} €</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -141,7 +150,19 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                     )}
                   </div>
                   {offer.flatRate > 0 ? (
-                    <div>+ Forfait Véhicule ({offer.flatRate.toFixed(2)} €)</div>
+                    <>
+                      <div>+ Forfait Véhicule ({offer.flatRate.toFixed(2)} €)</div>
+                      {bd.monthlyOverage > 0 && (
+                        <div>+ Dépassement forfait ({bd.monthlyOverage.toFixed(2)} €)</div>
+                      )}
+                      {bd.monthlyRefund > 0 && (
+                        <div style={{ color: '#34d399', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.25rem' }}>
+                          💡 <strong>Remboursement estimé en fin d'année : {(bd.monthlyRefund * 12).toFixed(2)} €</strong> 
+                          <br />
+                          <span style={{ fontSize: '0.75rem' }}>(Ce qui représente une moyenne de {bd.monthlyRefund.toFixed(2)} € / mois économisés sur le forfait)</span>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div>
                       + Consommation Véhicule ({bd.monthlyEvCostRaw.toFixed(2)} €)
@@ -152,16 +173,23 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                     </div>
                   )}
                   {offer.bonus > 0 && (
-                    <div style={{ color: '#34d399' }}>
-                      - Cagnotte de recharge ({bd.monthlyBonus.toFixed(2)} €)
-                      <div style={{ fontSize: '0.75rem', color: '#10b981', marginLeft: '0.5rem' }}>
-                        ↳ HC: {bd.optKwh.toFixed(0)} kWh × {offer.bonus.toFixed(4)} € <br/>
-                        ↳ HP: {bd.normKwh.toFixed(0)} kWh × {(offer.bonusHP || 0).toFixed(4)} €
+                    <div style={{ color: '#34d399', marginTop: '0.5rem' }}>
+                      <div>- Cagnotte de recharge ({bd.monthlyBonus.toFixed(2)} €)</div>
+                      <div style={{ fontSize: '0.75rem', color: '#10b981', marginLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+                        <div>↳ HC: {bd.optKwh.toFixed(0)} kWh × {offer.bonus.toFixed(4)} €</div>
+                        <div>↳ HP: {bd.normKwh.toFixed(0)} kWh × {(offer.bonusHP || 0).toFixed(4)} €</div>
                       </div>
                     </div>
                   )}
-                  <div style={{ marginTop: '0.5rem', fontWeight: 'bold', borderTop: '1px solid #475569', paddingTop: '0.5rem' }}>
-                    = {bd.monthlyTotal.toFixed(2)} €
+                  <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'white', marginTop: '0.5rem', lineHeight: '1.2' }}>
+                    <div>
+                      {bd.monthlyTotal.toFixed(2)} € <span style={{ fontSize: '1rem', color: '#cbd5e1', fontWeight: 'normal' }}>/mois</span>
+                    </div>
+                    {bd.monthlyRefund > 0 && (
+                      <div style={{ fontSize: '1.1rem', color: '#34d399', fontWeight: 'normal', marginTop: '0.2rem' }}>
+                        ({bd.monthlyNetTotal.toFixed(2)} € net)
+                      </div>
+                    )}
                   </div>
                   {(offer.isTempo || offer.isOctoTempo) && (
                     <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic' }}>
