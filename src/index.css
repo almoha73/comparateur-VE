@@ -1,0 +1,64 @@
+:root {
+  --color-bg-main: #0c001a;
+  --color-bg-card: #18092a;
+  --color-text-main: #ffffff;
+  --color-text-muted: #a092b0;
+  
+  --color-accent-pink: #f00078;
+  --color-accent-purple: #9000ff;
+  --color-accent-cyan: #00e6e6;
+  --color-accent-yellow: #ffee00;
+  
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Arimo', system-ui, sans-serif;
+  margin-bottom: 0.5rem;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
+
+input, select {
+  font-family: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-main);
+  border-radius: var(--border-radius-sm);
+  padding: 0.75rem;
+  width: 100%;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--color-accent-cyan);
+}
+
+.card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+}
