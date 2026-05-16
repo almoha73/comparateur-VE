@@ -172,7 +172,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                     <div>
                       + Consommation Véhicule ({bd.monthlyEvCostRaw.toFixed(2)} €)
                       <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginLeft: '0.5rem' }}>
-                        ↳ Répartie à 80% en HC ({bd.optKwh.toFixed(0)} kWh) et 20% en HP ({bd.normKwh.toFixed(0)} kWh)
+                        ↳ Répartie à {offer.isTempo100HC ? "100" : "80"}% en HC ({bd.optKwh.toFixed(0)} kWh) et {offer.isTempo100HC ? "0" : "20"}% en HP ({bd.normKwh.toFixed(0)} kWh)
                         {offer.isTempo || offer.isOctoTempo ? " (lissé sur l'année)" : ""}
                       </div>
                     </div>
