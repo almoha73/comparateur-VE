@@ -4,6 +4,7 @@ import Header from './components/Header';
 import ConsumptionInputs from './components/ConsumptionInputs';
 import OfferComparison from './components/OfferComparison';
 import OfferChart from './components/OfferChart';
+import CalculationDetails from './components/CalculationDetails';
 
 function App() {
   const [power, setPower] = useState('9');
@@ -331,6 +332,8 @@ function App() {
         selectedOfferId={bestOffer.id}
         offerType={offerType}
       />
+      
+      <CalculationDetails />
     </div>
   );
 }
