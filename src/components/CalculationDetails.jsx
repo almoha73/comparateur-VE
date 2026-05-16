@@ -76,6 +76,21 @@ function CalculationDetails() {
             MENSUALITÉ LISSÉE TEMPO : 114,48 € / mois
           </div>
 
+          <div style={{ marginTop: '1.5rem', padding: '1rem', borderLeft: '4px solid #3b82f6', backgroundColor: '#eff6ff', borderRadius: '0 4px 4px 0', fontSize: '0.9rem' }}>
+            <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: '#1e40af' }}>Variante : Si le client recharge 100% en Heures Creuses</h4>
+            <p style={{ margin: 0 }}>
+              Si le client s'assure de ne jamais brancher son véhicule en Heures Pleines (2 880 kWh rechargés exclusivement de nuit) :
+            </p>
+            <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+              <li><strong>Véhicule (VE) :</strong> 2 880 kWh × 0,13347 € = 384,39 € / an (au lieu de 422,78 €)</li>
+              <li><strong>TOTAL ANNUEL TEMPO :</strong> 249,86 + 701,04 + 384,39 = <strong>1 335,29 €</strong></li>
+              <li><strong>MENSUALITÉ LISSÉE TEMPO : 111,27 € / mois</strong></li>
+            </ul>
+            <p style={{ margin: 0, fontStyle: 'italic', color: '#475569' }}>
+              À noter : Avec Intelligent Octopus, le coût final de recharge reste contractuellement plafonné à 0,08 € / kWh grâce à la cagnotte. La mensualité Octopus reste donc à 101,10 € / mois. Intelligent Octopus reste le plus économique, avec plus de flexibilité.
+            </p>
+          </div>
+
           <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
 
           <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>3. Calcul avec Intelligent Octopus (Mensualité : 101,10 €)</h3>

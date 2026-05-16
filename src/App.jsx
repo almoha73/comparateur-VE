@@ -128,6 +128,21 @@ function App() {
         bonus: 0,
         flatRate: 0,
         features: ["Prix variables selon couleurs", "300 jours bleus très avantageux", "22 jours rouges très chers"]
+      },
+      {
+        id: 'edf-tempo-100hc',
+        name: 'EDF Tempo (100% HC)',
+        subscription: pSubscription * 1.05, // Approximated Tempo sub
+        isTempo: true,
+        isTempo100HC: true,
+        rates: {
+          blueHC: 0.1296, blueHP: 0.1609,
+          whiteHC: 0.1486, whiteHP: 0.1894,
+          redHC: 0.1568, redHP: 0.7562
+        },
+        bonus: 0,
+        flatRate: 0,
+        features: ["Variante 100% Heures Creuses", "Recharge VE de nuit uniquement", "Aucune recharge en journée"]
       }
     ];
 
@@ -139,8 +154,8 @@ function App() {
       
       const homeHC = homeConsumption * ((100 - homeHpRatio) / 100);
       const homeHP = homeConsumption * (homeHpRatio / 100);
-      const evHC = yearlyEvConsumption * 0.8;
-      const evHP = yearlyEvConsumption * 0.2;
+      const evHC = offer.isTempo100HC ? yearlyEvConsumption : yearlyEvConsumption * 0.8;
+      const evHP = offer.isTempo100HC ? 0 : yearlyEvConsumption * 0.2;
       
       const monthlyHomeKwh = homeConsumption / 12;
       const monthlyEvKwh = yearlyEvConsumption / 12;

@@ -22,6 +22,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                 {offer.id === 'octotempo' && '📅'}
                 {offer.id === 'drive-pack' && '🚘'}
                 {offer.id === 'edf-tempo' && '⏱️'}
+                {offer.id === 'edf-tempo-100hc' && '🌙'}
                 {offer.name}
               </div>
 
