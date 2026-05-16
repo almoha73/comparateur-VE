@@ -15,14 +15,14 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
               {isSelected && <div className="badge-selected">Offre sélectionnée</div>}
               
               <div className="offer-header">
-                {offer.id === 'intelligent-octopus' && '🐙'}
-                {offer.id === 'octopus-go' && '🚙'}
-                {offer.id === 'eco-conso' && '💡'}
-                {offer.id === 'emce-2025' && '🤝'}
-                {offer.id === 'octotempo' && '📅'}
-                {offer.id === 'drive-pack' && '🚘'}
-                {offer.id === 'edf-tempo' && '⏱️'}
-                {offer.id === 'edf-tempo-100hc' && '🌙'}
+                {offer.id === 'intelligent-octopus' && '🐙 '}
+                {offer.id === 'octopus-go' && '🚙 '}
+                {offer.id === 'eco-conso' && '💡 '}
+                {offer.id === 'emce-2025' && '🤝 '}
+                {offer.id === 'octotempo' && '📅 '}
+                {offer.id === 'drive-pack' && '🚘 '}
+                {offer.id === 'edf-tempo' && '⏱️ '}
+                {offer.id === 'edf-tempo-100hc' && '🌙 '}
                 {offer.name}
               </div>
 
