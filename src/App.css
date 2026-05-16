@@ -135,14 +135,15 @@
 
 .badge-selected {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: -12px;
+  right: 1.5rem;
   background-color: var(--color-accent-pink);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: bold;
+  box-shadow: 0 2px 8px rgba(240, 0, 120, 0.4);
 }
 
 .offer-header {
@@ -153,7 +154,6 @@
   font-weight: bold;
   color: white;
   margin-bottom: 0.5rem;
-  padding-right: 80px; /* space for badge */
 }
 
 .detail-box {
