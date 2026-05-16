@@ -348,7 +348,13 @@ function App() {
         offerType={offerType}
       />
       
-      <CalculationDetails />
+      <CalculationDetails 
+        power={power}
+        homeConsumption={homeConsumption}
+        homeHpRatio={homeHpRatio}
+        yearlyEvConsumption={yearlyEvConsumption}
+        offers={offers}
+      />
     </div>
   );
 }

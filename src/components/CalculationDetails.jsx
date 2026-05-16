@@ -1,7 +1,42 @@
 import React, { useState } from 'react';
 
-function CalculationDetails() {
+function CalculationDetails({ power, homeConsumption, homeHpRatio, yearlyEvConsumption, offers }) {
   const [openSection, setOpenSection] = useState(null);
+
+  if (!offers || offers.length === 0) return null;
+
+  const tempo = offers.find(o => o.id === 'edf-tempo');
+  const tempo100Hc = offers.find(o => o.id === 'edf-tempo-100hc');
+  const octopus = offers.find(o => o.id === 'intelligent-octopus');
+  const octotempo = offers.find(o => o.id === 'octotempo');
+
+  if (!tempo || !octopus || !octotempo || !tempo100Hc) return null;
+
+  const homeHpKwh = homeConsumption * (homeHpRatio / 100);
+  const homeHcKwh = homeConsumption * ((100 - homeHpRatio) / 100);
+  
+  const evHpKwh = yearlyEvConsumption * 0.2;
+  const evHcKwh = yearlyEvConsumption * 0.8;
+
+  const daysInYear = 365;
+
+  // Tempo Averages
+  const tempoAvgHc = (300/daysInYear * tempo.rates.blueHC) + (43/daysInYear * tempo.rates.whiteHC) + (22/daysInYear * tempo.rates.redHC);
+  const tempoAvgHp = (300/daysInYear * tempo.rates.blueHP) + (43/daysInYear * tempo.rates.whiteHP) + (22/daysInYear * tempo.rates.redHP);
+
+  // OctoTempo Averages
+  const octoAvgHc = (214/daysInYear * octotempo.rates.eteHC) + (129/daysInYear * octotempo.rates.hiverHC) + (22/daysInYear * octotempo.rates.redHC);
+  const octoAvgHp = (214/daysInYear * octotempo.rates.eteHP) + (129/daysInYear * octotempo.rates.hiverHP) + (22/daysInYear * octotempo.rates.redHP);
+
+  // Octopus calculations for detail
+  const octopusHomeHpCost = homeHpKwh * octopus.rates.hp;
+  const octopusHomeHcCost = homeHcKwh * octopus.rates.hc;
+  const octopusEvHpBrut = evHpKwh * octopus.rates.hp;
+  const octopusEvHcBrut = evHcKwh * octopus.rates.hc;
+  const octopusBonusHp = octopus.rates.hp - 0.08;
+  const octopusBonusHc = octopus.rates.hc - 0.08;
+  const octopusCagnotteAn = (octopus.breakdown.monthlyBonus * 12).toFixed(2);
+  const octopusBrutAn = (octopus.breakdown.monthlySub * 12) + octopusHomeHpCost + octopusHomeHcCost + octopusEvHpBrut + octopusEvHcBrut;
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
@@ -45,72 +80,87 @@ function CalculationDetails() {
 
       {openSection === 'tempo' && (
         <div style={{ padding: '2rem', color: '#334155', lineHeight: '1.6', fontSize: '0.95rem' }}>
-          <p><em>Ce document retrace l'intégralité du cheminement mathématique qui permet d'aboutir aux mensualités estimées. À fournir au client s'il souhaite vérifier la pertinence de l'algorithme.</em></p>
+          <p><em>Ces calculs s'adaptent dynamiquement en fonction de la puissance et des consommations que vous avez renseignées.</em></p>
           
           <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
 
           <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>1. Paramètres de la simulation</h3>
           <ul style={{ paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
-            <li><strong>Puissance souscrite :</strong> 9 kVA</li>
-            <li><strong>Consommation de la maison :</strong> 4 057 kWh / an (59% HP / 41% HC)</li>
-            <li><strong>Consommation du véhicule (VE) :</strong> 2 880 kWh / an (20% HP / 80% HC)</li>
+            <li><strong>Puissance souscrite :</strong> {power} kVA</li>
+            <li><strong>Consommation de la maison :</strong> {homeConsumption.toFixed(0)} kWh / an ({homeHpRatio}% HP / {100 - homeHpRatio}% HC)
+              <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem', color: '#64748b' }}>
+                <li>Soit : {homeHpKwh.toFixed(0)} kWh en HP et {homeHcKwh.toFixed(0)} kWh en HC</li>
+              </ul>
+            </li>
+            <li><strong>Consommation du véhicule (VE) :</strong> {yearlyEvConsumption.toFixed(0)} kWh / an (20% HP / 80% HC par défaut)
+              <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem', color: '#64748b' }}>
+                <li>Soit : {evHpKwh.toFixed(0)} kWh en HP et {evHcKwh.toFixed(0)} kWh en HC</li>
+              </ul>
+            </li>
           </ul>
 
-          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>2. Calcul avec EDF Tempo (Mensualité : 114,48 €)</h3>
+          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>2. Calcul avec EDF Tempo (Mensualité : {tempo.breakdown.monthlyNetTotal.toFixed(2)} €)</h3>
           <p>La spécificité d'EDF Tempo est la fluctuation du prix selon les jours. Pour obtenir une mensualité stable, nous calculons un prix "moyen lissé" sur l'année.</p>
           
           <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>A. Le "Prix Moyen Lissé" Tempo calculé par l'algorithme</h4>
           <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-            <li><strong>Moyenne HC annuelle</strong> = 0,13347 € / kWh</li>
-            <li><strong>Moyenne HP annuelle</strong> = 0,20013 € / kWh</li>
+            <li><strong>Moyenne HC annuelle</strong> = {tempoAvgHc.toFixed(5)} € / kWh</li>
+            <li><strong>Moyenne HP annuelle</strong> = {tempoAvgHp.toFixed(5)} € / kWh</li>
           </ul>
 
           <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>B. La facture annuelle Tempo</h4>
           <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-            <li><strong>Abonnement (9 kVA) :</strong> ~249,86 € / an</li>
-            <li><strong>Maison :</strong> 701,04 € / an</li>
-            <li><strong>Véhicule (VE) :</strong> 422,78 € / an</li>
+            <li><strong>Abonnement ({power} kVA) :</strong> ~{(tempo.breakdown.monthlySub * 12).toFixed(2)} € / an</li>
+            <li><strong>Maison :</strong> {(tempo.breakdown.monthlyHomeCost * 12).toFixed(2)} € / an</li>
+            <li><strong>Véhicule (VE) :</strong> {(tempo.breakdown.monthlyEvCostRaw * 12).toFixed(2)} € / an</li>
           </ul>
           <div style={{ backgroundColor: '#f1f5f9', padding: '1rem', borderRadius: '4px', fontWeight: 'bold' }}>
-            TOTAL ANNUEL TEMPO : 1 373,68 €<br/>
-            MENSUALITÉ LISSÉE TEMPO : 114,48 € / mois
+            TOTAL ANNUEL TEMPO : {tempo.totalCost.toFixed(2)} €<br/>
+            MENSUALITÉ LISSÉE TEMPO : {tempo.breakdown.monthlyNetTotal.toFixed(2)} € / mois
           </div>
 
           <div style={{ marginTop: '1.5rem', padding: '1rem', borderLeft: '4px solid #3b82f6', backgroundColor: '#eff6ff', borderRadius: '0 4px 4px 0', fontSize: '0.9rem' }}>
             <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: '#1e40af' }}>Variante : Si le client recharge 100% en Heures Creuses</h4>
             <p style={{ margin: 0 }}>
-              Si le client s'assure de ne jamais brancher son véhicule en Heures Pleines (2 880 kWh rechargés exclusivement de nuit) :
+              Si le client s'assure de ne jamais brancher son véhicule en Heures Pleines ({yearlyEvConsumption.toFixed(0)} kWh rechargés exclusivement de nuit) :
             </p>
             <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
-              <li><strong>Véhicule (VE) :</strong> 2 880 kWh × 0,13347 € = 384,39 € / an (au lieu de 422,78 €)</li>
-              <li><strong>TOTAL ANNUEL TEMPO :</strong> 249,86 + 701,04 + 384,39 = <strong>1 335,29 €</strong></li>
-              <li><strong>MENSUALITÉ LISSÉE TEMPO : 111,27 € / mois</strong></li>
+              <li><strong>Véhicule (VE) :</strong> {yearlyEvConsumption.toFixed(0)} kWh × {tempoAvgHc.toFixed(5)} € = {(tempo100Hc.breakdown.monthlyEvCostRaw * 12).toFixed(2)} € / an (au lieu de {(tempo.breakdown.monthlyEvCostRaw * 12).toFixed(2)} €)</li>
+              <li><strong>TOTAL ANNUEL TEMPO :</strong> {tempo100Hc.totalCost.toFixed(2)} €</li>
+              <li><strong>MENSUALITÉ LISSÉE TEMPO : {tempo100Hc.breakdown.monthlyNetTotal.toFixed(2)} € / mois</strong></li>
             </ul>
             <p style={{ margin: 0, fontStyle: 'italic', color: '#475569' }}>
-              À noter : Avec Intelligent Octopus, le coût final de recharge reste contractuellement plafonné à 0,08 € / kWh grâce à la cagnotte. La mensualité Octopus reste donc à 101,10 € / mois. Intelligent Octopus reste le plus économique, avec plus de flexibilité.
+              À noter : Avec Intelligent Octopus, le coût final de recharge reste contractuellement plafonné à 0,08 € / kWh grâce à la cagnotte. La mensualité Octopus reste donc à {octopus.breakdown.monthlyNetTotal.toFixed(2)} € / mois (que la recharge se fasse en HC ou en HP).
             </p>
           </div>
 
           <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
 
-          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>3. Calcul avec Intelligent Octopus (Mensualité : 101,10 €)</h3>
+          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>3. Calcul avec Intelligent Octopus (Mensualité : {octopus.breakdown.monthlyNetTotal.toFixed(2)} €)</h3>
           
           <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>A. La facture brute annuelle (avant remise de la cagnotte)</h4>
           <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-            <li><strong>Abonnement (9 kVA) :</strong> 237,96 € / an</li>
-            <li><strong>Maison :</strong> 744,79 € / an</li>
-            <li><strong>Véhicule (VE) brut :</strong> 475,25 € / an</li>
+            <li><strong>Abonnement ({power} kVA) :</strong> {(octopus.breakdown.monthlySub * 12).toFixed(2)} € / an</li>
+            <li><strong>Maison :</strong> {(octopus.breakdown.monthlyHomeCost * 12).toFixed(2)} € / an</li>
+            <li><strong>Véhicule (VE) brut :</strong> {(octopus.breakdown.monthlyEvCostRaw * 12).toFixed(2)} € / an</li>
           </ul>
 
           <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>B. Le calcul de la Cagnotte (Bonus de recharge intelligente)</h4>
-          <p>Total Cagnotte Annuelle : 244,85 € remboursés</p>
+          <p>Total Cagnotte Annuelle : {octopusCagnotteAn} € remboursés</p>
 
           <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>C. La facture annuelle nette</h4>
-          <p>On prend le coût brut et on déduit la cagnotte générée : 1 458,00 € - 244,85 € = 1 213,15 €</p>
+          <p>On prend le coût brut et on déduit la cagnotte générée : {octopusBrutAn.toFixed(2)} € - {octopusCagnotteAn} € = {octopus.totalCost.toFixed(2)} €</p>
           <div style={{ backgroundColor: '#ecfdf5', color: '#065f46', padding: '1rem', borderRadius: '4px', fontWeight: 'bold' }}>
-            TOTAL ANNUEL OCTOPUS : 1 213,15 €<br/>
-            MENSUALITÉ LISSÉE OCTOPUS : 101,10 € / mois
+            TOTAL ANNUEL OCTOPUS : {octopus.totalCost.toFixed(2)} €<br/>
+            MENSUALITÉ LISSÉE OCTOPUS : {octopus.breakdown.monthlyNetTotal.toFixed(2)} € / mois
           </div>
+
+          <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
+
+          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>4. Bilan Financier</h3>
+          <ul style={{ paddingLeft: '1.5rem' }}>
+            <li>Économie réalisée avec Intelligent Octopus par rapport à Tempo (classique) : <strong>{(tempo.breakdown.monthlyNetTotal - octopus.breakdown.monthlyNetTotal).toFixed(2)} € / mois</strong> (soit environ <strong>{((tempo.breakdown.monthlyNetTotal - octopus.breakdown.monthlyNetTotal) * 12).toFixed(0)} € / an</strong>).</li>
+          </ul>
         </div>
       )}
 
@@ -129,59 +179,45 @@ function CalculationDetails() {
           
           <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
 
-          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>1. Paramètres de la simulation</h3>
-          <ul style={{ paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
-            <li><strong>Puissance souscrite :</strong> 9 kVA</li>
-            <li><strong>Consommation de la maison :</strong> 4 057 kWh / an (59% HP / 41% HC)</li>
-            <li><strong>Consommation du véhicule (VE) :</strong> 2 880 kWh / an (20% HP / 80% HC)</li>
-          </ul>
-
-          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>2. Calcul avec OctoTempo (Mensualité : 115,92 €)</h3>
+          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>1. Calcul avec OctoTempo (Mensualité : {octotempo.breakdown.monthlyNetTotal.toFixed(2)} €)</h3>
           <p>Les prix varient selon la saison (Été / Hiver) et la couleur du jour. Nous calculons un prix moyen lissé sur l'année.</p>
           
-          <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>A. Les tarifs OctoTempo au kWh (TTC)</h4>
+          <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>A. Le "Prix Moyen Lissé" OctoTempo</h4>
           <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-            <li>Période Été (214 j, soit 58,63%) : HC 0,1325 € / HP 0,1575 €</li>
-            <li>Période Hiver "Normale" (129 j, soit 35,34%) : HC 0,1575 € / HP 0,1871 €</li>
-            <li>Jours Rouges (22 j, soit 6,03%) : HC 0,1575 € / HP 0,6469 €</li>
+            <li><strong>Moyenne HC annuelle</strong> = (58,63% × {octotempo.rates.eteHC}) + (35,34% × {octotempo.rates.hiverHC}) + (6,03% × {octotempo.rates.redHC}) = <strong>{octoAvgHc.toFixed(5)} € / kWh</strong></li>
+            <li><strong>Moyenne HP annuelle</strong> = (58,63% × {octotempo.rates.eteHP}) + (35,34% × {octotempo.rates.hiverHP}) + (6,03% × {octotempo.rates.redHP}) = <strong>{octoAvgHp.toFixed(5)} € / kWh</strong></li>
           </ul>
 
-          <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>B. Le "Prix Moyen Lissé" OctoTempo</h4>
+          <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>B. La facture annuelle OctoTempo</h4>
           <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-            <li><strong>Moyenne HC annuelle</strong> = (58,63% × 0,1325) + (35,34% × 0,1575) + (6,03% × 0,1575) = <strong>0,14284 € / kWh</strong></li>
-            <li><strong>Moyenne HP annuelle</strong> = (58,63% × 0,1575) + (35,34% × 0,1871) + (6,03% × 0,6469) = <strong>0,19747 € / kWh</strong></li>
-          </ul>
-
-          <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>C. La facture annuelle OctoTempo</h4>
-          <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-            <li><strong>Abonnement (9 kVA) :</strong> 237,96 € / an</li>
+            <li><strong>Abonnement ({power} kVA) :</strong> {(octotempo.breakdown.monthlySub * 12).toFixed(2)} € / an</li>
             <li><strong>Maison :</strong>
               <ul style={{ paddingLeft: '1.5rem' }}>
-                <li>HC : 1 663,37 kWh × 0,14284 € = 237,60 €</li>
-                <li>HP : 2 393,63 kWh × 0,19747 € = 472,67 €</li>
-                <li><em>Sous-total = 710,27 €</em></li>
+                <li>HC : {homeHcKwh.toFixed(2)} kWh × {octoAvgHc.toFixed(5)} €</li>
+                <li>HP : {homeHpKwh.toFixed(2)} kWh × {octoAvgHp.toFixed(5)} €</li>
+                <li><em>Sous-total = {(octotempo.breakdown.monthlyHomeCost * 12).toFixed(2)} €</em></li>
               </ul>
             </li>
             <li><strong>Véhicule (VE) :</strong>
               <ul style={{ paddingLeft: '1.5rem' }}>
-                <li>HC : 2 304 kWh × 0,14284 € = 329,11 €</li>
-                <li>HP : 576 kWh × 0,19747 € = 113,74 €</li>
-                <li><em>Sous-total = 442,85 €</em></li>
+                <li>HC : {evHcKwh.toFixed(2)} kWh × {octoAvgHc.toFixed(5)} €</li>
+                <li>HP : {evHpKwh.toFixed(2)} kWh × {octoAvgHp.toFixed(5)} €</li>
+                <li><em>Sous-total = {(octotempo.breakdown.monthlyEvCostRaw * 12).toFixed(2)} €</em></li>
               </ul>
             </li>
           </ul>
           <div style={{ backgroundColor: '#f1f5f9', padding: '1rem', borderRadius: '4px', fontWeight: 'bold' }}>
-            TOTAL ANNUEL OCTOTEMPO : 1 391,08 €<br/>
-            MENSUALITÉ LISSÉE OCTOTEMPO : 115,92 € / mois
+            TOTAL ANNUEL OCTOTEMPO : {octotempo.totalCost.toFixed(2)} €<br/>
+            MENSUALITÉ LISSÉE OCTOTEMPO : {octotempo.breakdown.monthlyNetTotal.toFixed(2)} € / mois
           </div>
 
           <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
 
-          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>3. Bilan Financier : OctoTempo vs Intelligent Octopus</h3>
+          <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>2. Bilan Financier : OctoTempo vs Intelligent Octopus</h3>
           <ul style={{ paddingLeft: '1.5rem' }}>
-            <li>Coût mensuel OctoTempo : <strong>115,92 €</strong></li>
-            <li>Coût mensuel Intelligent Octopus (après cagnotte) : <strong>101,10 €</strong></li>
-            <li>Économie réalisée avec Intelligent Octopus par rapport à OctoTempo : <strong>14,82 € / mois</strong> (soit environ <strong>178 € / an</strong>).</li>
+            <li>Coût mensuel OctoTempo : <strong>{octotempo.breakdown.monthlyNetTotal.toFixed(2)} €</strong></li>
+            <li>Coût mensuel Intelligent Octopus (après cagnotte) : <strong>{octopus.breakdown.monthlyNetTotal.toFixed(2)} €</strong></li>
+            <li>Économie réalisée avec Intelligent Octopus par rapport à OctoTempo : <strong>{(octotempo.breakdown.monthlyNetTotal - octopus.breakdown.monthlyNetTotal).toFixed(2)} € / mois</strong> (soit environ <strong>{((octotempo.breakdown.monthlyNetTotal - octopus.breakdown.monthlyNetTotal) * 12).toFixed(0)} € / an</strong>).</li>
             <li>Tout comme pour EDF Tempo, le tarif garanti à 0,08 € / kWh de la recharge via l'algorithme Octopus creuse considérablement l'écart en faveur de l'offre Intelligent Octopus pour un propriétaire de véhicule électrique.</li>
           </ul>
         </div>
