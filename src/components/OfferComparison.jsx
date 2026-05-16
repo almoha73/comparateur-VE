@@ -158,8 +158,12 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                       {bd.monthlyRefund > 0 && (
                         <div style={{ color: '#34d399', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.25rem' }}>
                           💡 <strong>Remboursement estimé en fin d'année : {(bd.monthlyRefund * 12).toFixed(2)} €</strong> 
-                          <br />
-                          <span style={{ fontSize: '0.75rem' }}>(Ce qui représente une moyenne de {bd.monthlyRefund.toFixed(2)} € / mois économisés sur le forfait)</span>
+                          <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#10b981' }}>
+                            Détail du calcul annuel :<br/>
+                            Forfait payé ({offer.flatRate.toFixed(2)} € × 12 mois) = {(offer.flatRate * 12).toFixed(2)} €<br/>
+                            - Consommation réelle ({bd.monthlyEvKwh.toFixed(0)} kWh/mois × 12) = {(bd.monthlyEvCostRaw * 12).toFixed(2)} €<br/>
+                            <strong>= {(bd.monthlyRefund * 12).toFixed(2)} € remboursés</strong>
+                          </div>
                         </div>
                       )}
                     </>

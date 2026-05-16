@@ -89,7 +89,7 @@ function App() {
         rates: { base: priceBase, hp: priceHP, hc: priceHC },
         bonus: 0,
         flatRate: 44.99,
-        features: ["Maison : Fixe HT 2 ans (abo + kWh)", "Forfait VE : 1 an, reconductible tacite", "Dépassement forfait : tarif fixe HT"]
+        features: ["Maison : Fixe HT 2 ans (abo + kWh)", "Forfait VE : 1 an, reconductible tacite", "Recharge VE sans limite de dépassement"]
       },
       {
         id: 'octopus-go',
@@ -216,10 +216,10 @@ function App() {
           const annualFlatRate = offer.flatRate * 12;
           if (evCostRaw < annualFlatRate) {
             refundMonthly = (annualFlatRate - evCostRaw) / 12;
-            evCostFinal = annualFlatRate; // Monthly billing remains the flat rate
+            evCostFinal = annualFlatRate;
           } else {
-            overageMonthly = (evCostRaw - annualFlatRate) / 12;
-            evCostFinal = evCostRaw; // Billing includes overage
+            overageMonthly = 0; // Aucun dépassement facturé !
+            evCostFinal = annualFlatRate; // On plafonne au prix du forfait
           }
         }
         if (offer.bonusType === 'intelligent') {
@@ -257,8 +257,8 @@ function App() {
             refundMonthly = (annualFlatRate - evCostRaw) / 12;
             evCostFinal = annualFlatRate;
           } else {
-            overageMonthly = (evCostRaw - annualFlatRate) / 12;
-            evCostFinal = evCostRaw;
+            overageMonthly = 0; // Aucun dépassement facturé !
+            evCostFinal = annualFlatRate; // Plafonné au forfait
           }
         }
         if (offer.bonusType === 'intelligent') {
