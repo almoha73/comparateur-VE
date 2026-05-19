@@ -213,12 +213,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                     </div>
                   </details>
                 </div>
-              </div>ges." 
-                        : " 214 jours d'Été, 129 jours d'Hiver normaux et 22 jours Rouges."}
-                    </div>
-                  )}
-                </div>
-              </details>
+              </div>
             </div>
           );
         })}
