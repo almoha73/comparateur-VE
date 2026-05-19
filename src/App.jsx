@@ -58,7 +58,7 @@ function App() {
     const baseOffers = [
       {
         id: 'emce-2025',
-        name: 'Energie Moins Chère Ensemble 2025',
+        name: 'EMCE 2025',
         subscription: emceSubscription,
         rates: { base: 0.1627, hp: 0.1727, hc: 0.1376 },
         bonus: 0,
