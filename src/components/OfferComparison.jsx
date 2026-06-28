@@ -35,6 +35,21 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                     </ul>
                   </div>
 
+                  {offer.id === 'octopus-go' && offerType === 'base' && (
+                    <div style={{
+                      marginTop: '0.75rem',
+                      padding: '0.6rem 0.8rem',
+                      backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                      border: '1px solid rgba(245, 158, 11, 0.2)',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.8rem',
+                      color: '#f59e0b',
+                      lineHeight: '1.4'
+                    }}>
+                      ⚠️ <strong>Attention :</strong> Cette offre impose un passage du client en option tarifaire <strong>Heures Pleines / Heures Creuses (HP/HC)</strong>.
+                    </div>
+                  )}
+
                   <div className="detail-box rates">
                     <div style={{ marginBottom: '0.5rem', color: 'white' }}>🏷️ Tarifs appliqués (TTC)</div>
                     {offer.isTempo ? (
