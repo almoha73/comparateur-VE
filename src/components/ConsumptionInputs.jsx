@@ -15,14 +15,17 @@ function ConsumptionInputs({
   let displayedEnergy = 0;
   let displayedDistance = 0;
 
+  const evVal = evInputValue === '' ? 0 : Number(evInputValue);
+  const evEff = evEfficiency === '' ? 0 : Number(evEfficiency);
+
   if (evInputMode === 'distance') {
-    const monthlyDistance = evPeriod === 'month' ? evInputValue : evInputValue / 12;
+    const monthlyDistance = evPeriod === 'month' ? evVal : evVal / 12;
     displayedDistance = monthlyDistance;
-    displayedEnergy = monthlyDistance * (evEfficiency / 100);
+    displayedEnergy = monthlyDistance * (evEff / 100);
   } else {
-    const monthlyEnergy = evPeriod === 'month' ? evInputValue : evInputValue / 12;
+    const monthlyEnergy = evPeriod === 'month' ? evVal : evVal / 12;
     displayedEnergy = monthlyEnergy;
-    displayedDistance = monthlyEnergy / (evEfficiency / 100);
+    displayedDistance = evEff > 0 ? monthlyEnergy / (evEff / 100) : 0;
   }
 
   return (
@@ -52,8 +55,8 @@ function ConsumptionInputs({
           </label>
           <input 
             type="number" 
-            value={Math.round(homeConsumption)} 
-            onChange={(e) => setHomeConsumption(Number(e.target.value))}
+            value={homeConsumption === '' ? '' : Math.round(homeConsumption)} 
+            onChange={(e) => setHomeConsumption(e.target.value === '' ? '' : Number(e.target.value))}
             disabled={hasTotalInput}
             min="0"
             step="100"
@@ -121,7 +124,7 @@ function ConsumptionInputs({
           <input 
             type="number" 
             value={evInputValue} 
-            onChange={(e) => setEvInputValue(Number(e.target.value))}
+            onChange={(e) => setEvInputValue(e.target.value === '' ? '' : Number(e.target.value))}
             min="0"
             style={{ backgroundColor: 'rgba(30, 27, 75, 0.5)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
           />
@@ -134,7 +137,7 @@ function ConsumptionInputs({
           <input 
             type="number" 
             value={evEfficiency} 
-            onChange={(e) => setEvEfficiency(Number(e.target.value))}
+            onChange={(e) => setEvEfficiency(e.target.value === '' ? '' : Number(e.target.value))}
             min="10"
             max="40"
             step="0.1"

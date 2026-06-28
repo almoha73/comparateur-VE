@@ -22,21 +22,25 @@ function App() {
   const [homeHpRatio, setHomeHpRatio] = useState(60);
 
   // Constants & calculations
+  const evVal = evInputValue === '' ? 0 : Number(evInputValue);
+  const evEff = evEfficiency === '' ? 0 : Number(evEfficiency);
+  const homeVal = homeConsumption === '' ? 0 : Number(homeConsumption);
+
   let yearlyEvConsumption = 0;
   if (evInputMode === 'distance') {
-    const monthlyDistance = evPeriod === 'month' ? evInputValue : evInputValue / 12;
-    yearlyEvConsumption = monthlyDistance * 12 * (evEfficiency / 100);
+    const monthlyDistance = evPeriod === 'month' ? evVal : evVal / 12;
+    yearlyEvConsumption = monthlyDistance * 12 * (evEff / 100);
   } else {
-    yearlyEvConsumption = evPeriod === 'month' ? evInputValue * 12 : evInputValue;
+    yearlyEvConsumption = evPeriod === 'month' ? evVal * 12 : evVal;
   }
   
   const hasTotalInput = totalConsumptionInput !== '' && Number(totalConsumptionInput) > 0;
   const finalHomeConsumption = hasTotalInput 
     ? Math.max(0, Number(totalConsumptionInput) - yearlyEvConsumption)
-    : homeConsumption;
+    : homeVal;
   const finalTotalConsumption = hasTotalInput 
     ? Number(totalConsumptionInput)
-    : homeConsumption + yearlyEvConsumption;
+    : homeVal + yearlyEvConsumption;
 
   // Exact offer data based on Octopus Energy
   const offers = useMemo(() => {
@@ -339,7 +343,7 @@ function App() {
         offerType={offerType} setOfferType={setOfferType}
       />
       <ConsumptionInputs 
-        homeConsumption={finalHomeConsumption} setHomeConsumption={setHomeConsumption}
+        homeConsumption={hasTotalInput ? finalHomeConsumption : homeConsumption} setHomeConsumption={setHomeConsumption}
         totalConsumptionInput={totalConsumptionInput} setTotalConsumptionInput={setTotalConsumptionInput}
         hasTotalInput={hasTotalInput}
         yearlyEvConsumption={yearlyEvConsumption}
