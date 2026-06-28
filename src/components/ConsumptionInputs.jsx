@@ -2,6 +2,8 @@ import React from 'react';
 
 function ConsumptionInputs({ 
   homeConsumption, setHomeConsumption, 
+  totalConsumptionInput, setTotalConsumptionInput,
+  hasTotalInput, yearlyEvConsumption,
   evInputMode, setEvInputMode, 
   evPeriod, setEvPeriod, 
   evInputValue, setEvInputValue,
@@ -27,16 +29,51 @@ function ConsumptionInputs({
     <div className="card">
       <h2 className="section-title">Estimation de la Consommation</h2>
       
-      <div className="form-group" style={{ marginBottom: '2rem' }}>
-        <label>Consommation domestique (hors VE) en kWh/an</label>
-        <input 
-          type="number" 
-          value={homeConsumption} 
-          onChange={(e) => setHomeConsumption(Number(e.target.value))}
-          min="0"
-          step="100"
-          style={{ maxWidth: '400px' }}
-        />
+      <div className="grid-2" style={{ marginBottom: '2rem' }}>
+        <div className="form-group">
+          <label>Consommation annuelle totale du logement (kWh/an, Optionnel)</label>
+          <input 
+            type="number" 
+            placeholder="Ex: 8000 (VE inclus)"
+            value={totalConsumptionInput} 
+            onChange={(e) => setTotalConsumptionInput(e.target.value === '' ? '' : Number(e.target.value))}
+            min="0"
+            step="100"
+            style={{ backgroundColor: 'rgba(30, 27, 75, 0.5)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
+          />
+          <small style={{ color: 'var(--color-text-muted)', display: 'block', marginTop: '0.25rem', fontSize: '0.8rem' }}>
+            Remplir si vous connaissez la consommation globale logement + VE.
+          </small>
+        </div>
+
+        <div className="form-group">
+          <label>
+            Consommation domestique {hasTotalInput ? '(calculée hors VE)' : '(hors VE)'} en kWh/an
+          </label>
+          <input 
+            type="number" 
+            value={Math.round(homeConsumption)} 
+            onChange={(e) => setHomeConsumption(Number(e.target.value))}
+            disabled={hasTotalInput}
+            min="0"
+            step="100"
+            style={{ 
+              opacity: hasTotalInput ? 0.7 : 1, 
+              cursor: hasTotalInput ? 'not-allowed' : 'text',
+              backgroundColor: hasTotalInput ? 'rgba(255, 255, 255, 0.05)' : '',
+              borderColor: hasTotalInput ? 'rgba(255, 255, 255, 0.05)' : ''
+            }}
+          />
+          {hasTotalInput ? (
+            <small style={{ color: '#34d399', display: 'block', marginTop: '0.25rem', fontSize: '0.8rem' }}>
+              ✓ Déduite automatiquement : {Math.round(totalConsumptionInput)} - {Math.round(yearlyEvConsumption)} (VE)
+            </small>
+          ) : (
+            <small style={{ color: 'var(--color-text-muted)', display: 'block', marginTop: '0.25rem', fontSize: '0.8rem' }}>
+              Saisie directe (la consommation du VE s'ajoutera automatiquement).
+            </small>
+          )}
+        </div>
       </div>
 
       <h3 style={{ color: 'white', marginBottom: '1rem', fontSize: '1.2rem' }}>Consommation véhicule</h3>
@@ -130,8 +167,8 @@ function ConsumptionInputs({
               <span>🌙 HC: {100 - homeHpRatio}%</span>
             </div>
           </div>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-            Ajustez la répartition selon vos habitudes de consommation. Par défaut : 60% HP / 40% HC.
+           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+            Ajustez la répartition HP/HC pour la consommation du foyer (hors VE). Par défaut : 60% HP / 40% HC.
           </p>
         </div>
       </div>

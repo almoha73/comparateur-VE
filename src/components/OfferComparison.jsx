@@ -85,8 +85,8 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
 
                   {offer.flatRate > 0 && (
                     <div className="breakdown-row" style={{ color: 'var(--color-accent-pink)' }}>
-                      <span>🚘 Forfait illimité</span>
-                      <span>{offer.flatRate.toFixed(2)} €</span>
+                      <span>{bd.monthlyEvCostRaw * 12 > offer.flatRate * 12 ? '🚙 Conso VE (au réel)' : '🚘 Forfait VE'}</span>
+                      <span>{bd.monthlyEvCostRaw * 12 > offer.flatRate * 12 ? (bd.monthlyEvCostRaw).toFixed(2) : offer.flatRate.toFixed(2)} €</span>
                     </div>
                   )}
 
@@ -157,20 +157,30 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                       </div>
                       {offer.flatRate > 0 ? (
                         <>
-                          <div>+ Forfait Véhicule ({offer.flatRate.toFixed(2)} €)</div>
-                          {bd.monthlyOverage > 0 && (
-                            <div>+ Dépassement forfait ({bd.monthlyOverage.toFixed(2)} €)</div>
-                          )}
-                          {bd.monthlyRefund > 0 && (
-                            <div style={{ color: '#34d399', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.25rem' }}>
-                              💡 <strong>Remboursement estimé en fin d'année : {(bd.monthlyRefund * 12).toFixed(2)} €</strong> 
-                              <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#10b981' }}>
-                                Détail du calcul annuel :<br/>
-                                Forfait payé ({offer.flatRate.toFixed(2)} € × 12 mois) = {(offer.flatRate * 12).toFixed(2)} €<br/>
-                                - Consommation réelle ({bd.monthlyEvKwh.toFixed(0)} kWh/mois × 12) = {(bd.monthlyEvCostRaw * 12).toFixed(2)} €<br/>
-                                <strong>= {(bd.monthlyRefund * 12).toFixed(2)} € remboursés</strong>
+                          {bd.monthlyEvCostRaw * 12 > offer.flatRate * 12 ? (
+                            <>
+                              <div>+ Consommation réelle véhicule ({bd.monthlyEvCostRaw.toFixed(2)} €)</div>
+                              <div style={{ color: '#34d399', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.25rem' }}>
+                                💡 <strong>Remboursement estimé à la régul : {(bd.monthlyRefund * 12).toFixed(2)} €</strong> 
+                                <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#10b981' }}>
+                                  Détail du calcul annuel :<br/>
+                                  Consommation réelle payée dans l'année : {(bd.monthlyEvCostRaw * 12).toFixed(2)} €<br/>
+                                  - Plafond du forfait ({offer.flatRate.toFixed(2)} € × 12 mois) = {(offer.flatRate * 12).toFixed(2)} €<br/>
+                                  <strong>= {(bd.monthlyRefund * 12).toFixed(2)} € remboursés</strong> au moment de la régularisation de fin d'année.
+                                </div>
                               </div>
-                            </div>
+                            </>
+                          ) : (
+                            <>
+                              <div>+ Forfait Véhicule ({offer.flatRate.toFixed(2)} €)</div>
+                              <div style={{ color: '#f87171', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(248, 113, 113, 0.1)', borderRadius: '0.25rem' }}>
+                                ℹ️ <strong>Aucun remboursement en fin d'année</strong>
+                                <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#cbd5e1' }}>
+                                  Votre consommation réelle ({bd.monthlyEvKwh.toFixed(0)} kWh/mois × 12) est estimée à {(bd.monthlyEvCostRaw * 12).toFixed(2)} €.<br/>
+                                  Comme elle est inférieure au forfait annuel de {(offer.flatRate * 12).toFixed(2)} €, le forfait s'applique intégralement sans remboursement (la différence est perdue).
+                                </div>
+                              </div>
+                            </>
                           )}
                         </>
                       ) : (

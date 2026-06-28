@@ -13,6 +13,7 @@ function App() {
   const [subscriptionDate, setSubscriptionDate] = useState('post-feb-2026');
   
   const [homeConsumption, setHomeConsumption] = useState(4500);
+  const [totalConsumptionInput, setTotalConsumptionInput] = useState('');
   
   const [evInputMode, setEvInputMode] = useState('distance'); // 'distance' or 'energy'
   const [evPeriod, setEvPeriod] = useState('month'); // 'month' or 'year'
@@ -29,7 +30,13 @@ function App() {
     yearlyEvConsumption = evPeriod === 'month' ? evInputValue * 12 : evInputValue;
   }
   
-  const totalConsumption = homeConsumption + yearlyEvConsumption;
+  const hasTotalInput = totalConsumptionInput !== '' && Number(totalConsumptionInput) > 0;
+  const finalHomeConsumption = hasTotalInput 
+    ? Math.max(0, Number(totalConsumptionInput) - yearlyEvConsumption)
+    : homeConsumption;
+  const finalTotalConsumption = hasTotalInput 
+    ? Number(totalConsumptionInput)
+    : homeConsumption + yearlyEvConsumption;
 
   // Exact offer data based on Octopus Energy
   const offers = useMemo(() => {
@@ -152,12 +159,12 @@ function App() {
       const annualSub = offer.subscription * 12;
       const monthlySub = offer.subscription;
       
-      const homeHC = homeConsumption * ((100 - homeHpRatio) / 100);
-      const homeHP = homeConsumption * (homeHpRatio / 100);
+      const homeHC = finalHomeConsumption * ((100 - homeHpRatio) / 100);
+      const homeHP = finalHomeConsumption * (homeHpRatio / 100);
       const evHC = offer.isTempo100HC ? yearlyEvConsumption : yearlyEvConsumption * 0.8;
       const evHP = offer.isTempo100HC ? 0 : yearlyEvConsumption * 0.2;
       
-      const monthlyHomeKwh = homeConsumption / 12;
+      const monthlyHomeKwh = finalHomeConsumption / 12;
       const monthlyEvKwh = yearlyEvConsumption / 12;
 
       let homeCost = 0;
@@ -231,11 +238,11 @@ function App() {
         if (offer.flatRate > 0) {
           const annualFlatRate = offer.flatRate * 12;
           if (evCostRaw < annualFlatRate) {
-            refundMonthly = (annualFlatRate - evCostRaw) / 12;
+            refundMonthly = 0; // Pas de remboursement, c'est perdu !
             evCostFinal = annualFlatRate;
           } else {
-            overageMonthly = 0; // Aucun dépassement facturé !
-            evCostFinal = annualFlatRate; // On plafonne au prix du forfait
+            refundMonthly = (evCostRaw - annualFlatRate) / 12; // Trop-payé remboursé à la régul
+            evCostFinal = evCostRaw; // Facturé au réel au fil de l'année
           }
         }
         if (offer.bonusType === 'intelligent') {
@@ -258,7 +265,7 @@ function App() {
         cost = annualSub + homeCost + evCostFinal;
       } else {
         // Base option
-        homeCost = homeConsumption * offer.rates.base;
+        homeCost = finalHomeConsumption * offer.rates.base;
         evCostRaw = yearlyEvConsumption * offer.rates.base;
         evCostFinal = evCostRaw;
         
@@ -270,11 +277,11 @@ function App() {
         if (offer.flatRate > 0) {
           const annualFlatRate = offer.flatRate * 12;
           if (evCostRaw < annualFlatRate) {
-            refundMonthly = (annualFlatRate - evCostRaw) / 12;
+            refundMonthly = 0; // Pas de remboursement, c'est perdu !
             evCostFinal = annualFlatRate;
           } else {
-            overageMonthly = 0; // Aucun dépassement facturé !
-            evCostFinal = annualFlatRate; // Plafonné au forfait
+            refundMonthly = (evCostRaw - annualFlatRate) / 12; // Trop-payé remboursé à la régul
+            evCostFinal = evCostRaw; // Facturé au réel au fil de l'année
           }
         }
         if (offer.bonusType === 'intelligent') {
@@ -320,7 +327,7 @@ function App() {
         }
       };
     }).sort((a, b) => a.totalCost - b.totalCost);
-  }, [power, offerType, homeConsumption, yearlyEvConsumption, totalConsumption, subscriptionDate, homeHpRatio]);
+  }, [power, offerType, finalHomeConsumption, yearlyEvConsumption, finalTotalConsumption, subscriptionDate, homeHpRatio]);
 
   // Find best offer
   const bestOffer = offers[0];
@@ -332,7 +339,10 @@ function App() {
         offerType={offerType} setOfferType={setOfferType}
       />
       <ConsumptionInputs 
-        homeConsumption={homeConsumption} setHomeConsumption={setHomeConsumption}
+        homeConsumption={finalHomeConsumption} setHomeConsumption={setHomeConsumption}
+        totalConsumptionInput={totalConsumptionInput} setTotalConsumptionInput={setTotalConsumptionInput}
+        hasTotalInput={hasTotalInput}
+        yearlyEvConsumption={yearlyEvConsumption}
         evInputMode={evInputMode} setEvInputMode={setEvInputMode}
         evPeriod={evPeriod} setEvPeriod={setEvPeriod}
         evInputValue={evInputValue} setEvInputValue={setEvInputValue}
@@ -350,7 +360,7 @@ function App() {
       
       <CalculationDetails 
         power={power}
-        homeConsumption={homeConsumption}
+        homeConsumption={finalHomeConsumption}
         homeHpRatio={homeHpRatio}
         yearlyEvConsumption={yearlyEvConsumption}
         offers={offers}
