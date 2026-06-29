@@ -180,7 +180,8 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                             <div style={{ color: '#cbd5e1', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '0.25rem' }}>
                               ℹ️ <strong>Forfait minimal appliqué :</strong>
                               <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#cbd5e1' }}>
-                                Consommation VE réelle estimée à {bd.monthlyEvCostRaw.toFixed(2)} €/mois. Inférieure au forfait de {(offer.flatRate * 12).toFixed(2)} €/an, le forfait s'applique donc intégralement.
+                                La consommation réelle ({bd.monthlyEvKwh.toFixed(0)} kWh/mois × 12) est estimée à {(bd.monthlyEvCostRaw * 12).toFixed(2)} €.<br/>
+                                Comme elle est inférieure au forfait annuel de {(offer.flatRate * 12).toFixed(2)} €, le forfait s'applique intégralement sans remboursement (la différence est perdue).
                               </div>
                             </div>
                           )}
