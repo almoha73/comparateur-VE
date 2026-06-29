@@ -50,12 +50,7 @@ function OfferChart({ offers }) {
                   )}
                 </div>
                 <div className="chart-price-label">
-                  {bd.monthlyTotal.toFixed(2)} €
-                  {bd.monthlyRefund > 0 && (
-                    <span style={{ fontSize: '0.8rem', color: '#34d399', marginLeft: '0.4rem' }}>
-                      ({bd.monthlyNetTotal.toFixed(2)} € net)
-                    </span>
-                  )}
+                  {bd.monthlyNetTotal.toFixed(2)} €
                 </div>
               </div>
             </div>
@@ -87,12 +82,7 @@ function OfferChart({ offers }) {
                 <span className="summary-name">{offer.name.replace(' Fixe Février', '').replace(' Fixe Avril', '')}</span>
               </div>
               <div className="summary-price" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div>{offer.breakdown.monthlyTotal.toFixed(2)} € {idx === 0 && <span className="trophy">🏆</span>}</div>
-                {offer.breakdown.monthlyRefund > 0 && (
-                  <div style={{ fontSize: '0.85rem', color: '#34d399', marginTop: '0.2rem' }}>
-                    ({offer.breakdown.monthlyNetTotal.toFixed(2)} €)
-                  </div>
-                )}
+                <div>{offer.breakdown.monthlyNetTotal.toFixed(2)} € {idx === 0 && <span className="trophy">🏆</span>}</div>
               </div>
             </div>
           );

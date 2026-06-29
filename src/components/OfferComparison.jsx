@@ -127,14 +127,9 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
 
                 <div className="offer-card-right">
                   <div className="breakdown-row total" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
-                    <span>Total mensuel TTC</span>
+                    <span>Total mensuel TTC (Net)</span>
                     <span style={{ textAlign: 'right' }}>
-                      <div>{bd.monthlyTotal.toFixed(2)} €</div>
-                      {bd.monthlyRefund > 0 && (
-                        <div style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 'normal', marginTop: '0.2rem' }}>
-                          ({bd.monthlyNetTotal.toFixed(2)} €/mois net)
-                        </div>
-                      )}
+                      <div>{bd.monthlyNetTotal.toFixed(2)} €</div>
                     </span>
                   </div>
 
@@ -172,30 +167,22 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                       </div>
                       {offer.flatRate > 0 ? (
                         <>
+                          <div>+ Forfait Véhicule ({offer.flatRate.toFixed(2)} €)</div>
                           {bd.monthlyEvCostRaw * 12 > offer.flatRate * 12 ? (
-                            <>
-                              <div>+ Consommation réelle véhicule ({bd.monthlyEvCostRaw.toFixed(2)} €)</div>
-                              <div style={{ color: '#34d399', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.25rem' }}>
-                                💡 <strong>Remboursement estimé à la régul : {(bd.monthlyRefund * 12).toFixed(2)} €</strong> 
-                                <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#10b981' }}>
-                                  Détail du calcul annuel :<br/>
-                                  Consommation réelle payée dans l'année : {(bd.monthlyEvCostRaw * 12).toFixed(2)} €<br/>
-                                  - Plafond du forfait ({offer.flatRate.toFixed(2)} € × 12 mois) = {(offer.flatRate * 12).toFixed(2)} €<br/>
-                                  <strong>= {(bd.monthlyRefund * 12).toFixed(2)} € remboursés</strong> au moment de la régularisation de fin d'année.
-                                </div>
+                            <div style={{ color: '#34d399', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.25rem' }}>
+                              💡 <strong>Abonnement avec remboursement de dépassement :</strong>
+                              <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#10b981' }}>
+                                Consommation VE réelle estimée à {bd.monthlyEvCostRaw.toFixed(2)} €/mois (soit {(bd.monthlyEvCostRaw * 12).toFixed(2)} €/an).<br/>
+                                Le surplus (soit {(bd.monthlyRefund * 12).toFixed(2)} €/an) sera déduit à la régul, garantissant un coût net de {offer.flatRate.toFixed(2)} €/mois.
                               </div>
-                            </>
+                            </div>
                           ) : (
-                            <>
-                              <div>+ Forfait Véhicule ({offer.flatRate.toFixed(2)} €)</div>
-                              <div style={{ color: '#f87171', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(248, 113, 113, 0.1)', borderRadius: '0.25rem' }}>
-                                ℹ️ <strong>Aucun remboursement en fin d'année</strong>
-                                <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#cbd5e1' }}>
-                                  Votre consommation réelle ({bd.monthlyEvKwh.toFixed(0)} kWh/mois × 12) est estimée à {(bd.monthlyEvCostRaw * 12).toFixed(2)} €.<br/>
-                                  Comme elle est inférieure au forfait annuel de {(offer.flatRate * 12).toFixed(2)} €, le forfait s'applique intégralement sans remboursement (la différence est perdue).
-                                </div>
+                            <div style={{ color: '#cbd5e1', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '0.25rem' }}>
+                              ℹ️ <strong>Forfait minimal appliqué :</strong>
+                              <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#cbd5e1' }}>
+                                Consommation VE réelle estimée à {bd.monthlyEvCostRaw.toFixed(2)} €/mois. Inférieure au forfait de {(offer.flatRate * 12).toFixed(2)} €/an, le forfait s'applique donc intégralement.
                               </div>
-                            </>
+                            </div>
                           )}
                         </>
                       ) : (
@@ -218,13 +205,8 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                       )}
                       <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'white', marginTop: '0.5rem', lineHeight: '1.2' }}>
                         <div>
-                          {bd.monthlyTotal.toFixed(2)} € <span style={{ fontSize: '1rem', color: '#cbd5e1', fontWeight: 'normal' }}>/mois</span>
+                          {bd.monthlyNetTotal.toFixed(2)} € <span style={{ fontSize: '1rem', color: '#cbd5e1', fontWeight: 'normal' }}>/mois net</span>
                         </div>
-                        {bd.monthlyRefund > 0 && (
-                          <div style={{ fontSize: '1.1rem', color: '#34d399', fontWeight: 'normal', marginTop: '0.2rem' }}>
-                            ({bd.monthlyNetTotal.toFixed(2)} € net)
-                          </div>
-                        )}
                       </div>
                       {(offer.isTempo || offer.isOctoTempo) && (
                         <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic' }}>
