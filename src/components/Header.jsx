@@ -4,7 +4,6 @@ function Header({ power, setPower, offerType, setOfferType }) {
   return (
     <div className="card header">
       <h1>Comparateur d'offres VE</h1>
-      <p>Estimez vos coûts de recharge et optimisez votre contrat d'électricité</p>
       
       <div className="grid-2" style={{ marginTop: '2rem', textAlign: 'left' }}>
         <div className="form-group">
