@@ -39,7 +39,7 @@ function OfferChart({ offers }) {
           return (
             <div className="chart-row" key={offer.id}>
               <div className="chart-label-col">
-                <span className="chart-offer-name">{offer.name.replace(' Fixe Février', '').replace(' Fixe Avril', '')}</span>
+                <span className="chart-offer-name">{offer.name.replace(' Fixe Février', '').replace(' Fixe Avril', '').replace(' Fixe Août', '')}</span>
               </div>
               <div className="chart-bar-col">
                 <div className="chart-bar-wrapper" style={{ width: `${totalPct}%` }}>
@@ -67,6 +67,7 @@ function OfferChart({ offers }) {
       <div className="chart-summary">
         {offers.map((offer, idx) => {
           let icon = '⚡';
+          if (offer.id === 'cocon') icon = '🪺';
           if (offer.id === 'intelligent-octopus') icon = '🐙';
           if (offer.id === 'octopus-go') icon = '🚙';
           if (offer.id === 'eco-conso') icon = '💡';
@@ -74,12 +75,14 @@ function OfferChart({ offers }) {
           if (offer.id === 'octotempo') icon = '📅';
           if (offer.id === 'drive-pack') icon = '🚘';
           if (offer.id === 'edf-tempo') icon = '⏱️';
+          if (offer.id === 'edf-tempo-100hc') icon = '🌙';
+          if (offer.id === 'edf-bleu') icon = '🏛️';
 
           return (
             <div className={`summary-card ${idx === 0 ? 'best' : ''}`} key={`sum-${offer.id}`}>
               <div className="summary-title">
                 <span className="summary-icon">{icon}</span>
-                <span className="summary-name">{offer.name.replace(' Fixe Février', '').replace(' Fixe Avril', '')}</span>
+                <span className="summary-name">{offer.name.replace(' Fixe Février', '').replace(' Fixe Avril', '').replace(' Fixe Août', '')}</span>
               </div>
               <div className="summary-price" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div>{offer.breakdown.monthlyNetTotal.toFixed(2)} € {idx === 0 && <span className="trophy">🏆</span>}</div>

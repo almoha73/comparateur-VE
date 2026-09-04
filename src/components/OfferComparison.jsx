@@ -16,6 +16,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                          <div className="offer-card-content">
                 <div className="offer-card-left">
                   <div className="offer-header">
+                    {offer.id === 'cocon' && '🪺 '}
                     {offer.id === 'intelligent-octopus' && '🐙 '}
                     {offer.id === 'octopus-go' && '🚙 '}
                     {offer.id === 'eco-conso' && '💡 '}
@@ -24,6 +25,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                     {offer.id === 'drive-pack' && '🚘 '}
                     {offer.id === 'edf-tempo' && '⏱️ '}
                     {offer.id === 'edf-tempo-100hc' && '🌙 '}
+                    {offer.id === 'edf-bleu' && '🏛️ '}
                     {offer.name}
                   </div>
 
@@ -70,6 +72,20 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                         <span style={{ color: '#f87171' }}>Rouge HC: {offer.rates.redHC}€</span>
                         <span style={{ color: '#f87171' }}>Rouge HP: {offer.rates.redHP}€</span>
                       </div>
+                    ) : offer.isCocon ? (
+                      offerType === 'base' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', fontSize: '0.8rem' }}>
+                          <span style={{ color: '#fde047' }}>Été : {offer.rates.ete} €</span>
+                          <span style={{ color: '#60a5fa' }}>Hiver : {offer.rates.hiver} €</span>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', fontSize: '0.8rem' }}>
+                          <span style={{ color: '#fde047' }}>Été HC : {offer.rates.eteHC} €</span>
+                          <span style={{ color: '#fde047' }}>Été HP : {offer.rates.eteHP} €</span>
+                          <span style={{ color: '#60a5fa' }}>Hiver HC : {offer.rates.hiverHC} €</span>
+                          <span style={{ color: '#60a5fa' }}>Hiver HP : {offer.rates.hiverHP} €</span>
+                        </div>
+                      )
                     ) : (offer.id !== 'octopus-go' && offerType === 'base') ? (
                       <div style={{ color: 'var(--color-accent-pink)' }}>Base : {offer.rates.base} €/kWh TTC</div>
                     ) : (
@@ -159,7 +175,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                       <div>+ Abonnement ({bd.monthlySub.toFixed(2)} €)</div>
                       <div>
                         + Consommation Maison ({bd.monthlyHomeCost.toFixed(2)} €)
-                        {(offerType === 'hphc' || offer.isTempo || offer.isOctoTempo) && (
+                        {(offerType === 'hphc' || offer.isTempo || offer.isOctoTempo || offer.isCocon) && (
                           <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginLeft: '0.5rem' }}>
                             ↳ Basé sur votre répartition ({(100 - bd.homeHpRatio || 40)}% HC / {bd.homeHpRatio || 60}% HP)
                           </div>
@@ -191,7 +207,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                           + Consommation Véhicule ({bd.monthlyEvCostRaw.toFixed(2)} €)
                           <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginLeft: '0.5rem' }}>
                             ↳ Répartie à {offer.isTempo100HC ? "100" : "80"}% en HC ({bd.optKwh.toFixed(0)} kWh) et {offer.isTempo100HC ? "0" : "20"}% en HP ({bd.normKwh.toFixed(0)} kWh)
-                            {offer.isTempo || offer.isOctoTempo ? " (lissé sur l'année)" : ""}
+                            {offer.isTempo || offer.isOctoTempo || offer.isCocon ? " (lissé sur l'année)" : ""}
                           </div>
                         </div>
                       )}
@@ -209,13 +225,15 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                           {bd.monthlyNetTotal.toFixed(2)} € <span style={{ fontSize: '1rem', color: '#cbd5e1', fontWeight: 'normal' }}>/mois net</span>
                         </div>
                       </div>
-                      {(offer.isTempo || offer.isOctoTempo) && (
+                      {(offer.isTempo || offer.isOctoTempo || offer.isCocon) && (
                         <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic' }}>
-                          * Pour cette offre dynamique, le coût affiché est une moyenne mensuelle lissée. 
+                          * Pour cette offre dynamique ou saisonnalisée, le coût affiché est une moyenne mensuelle lissée. 
                           Les tarifs sont appliqués proportionnellement au nombre de jours dans l'année : 
                           {offer.isTempo 
                             ? " 300 jours Bleus, 43 jours Blancs et 22 jours Rouges." 
-                            : " 214 jours d'Été, 129 jours d'Hiver normaux et 22 jours Rouges."}
+                            : offer.isOctoTempo 
+                              ? " 214 jours d'Été, 129 jours d'Hiver normaux et 22 jours Rouges."
+                              : " 214 jours d'Été (Avril à Octobre) et 151 jours d'Hiver (Novembre à Mars)."}
                         </div>
                       )}
                     </div>

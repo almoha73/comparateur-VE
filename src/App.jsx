@@ -42,36 +42,89 @@ function App() {
     ? Number(totalConsumptionInput)
     : homeVal + yearlyEvConsumption;
 
-  // Exact offer data based on Octopus Energy
+  // Exact offer data based on Octopus Energy (Grilles d'Août 2026)
   const offers = useMemo(() => {
-    // Subscriptions based on power (kVA) and offerType (base/hphc)
-    let pSubscription = 0;
-    let emceSubscription = 0;
-    let powerNum = Number(power);
+    const powerNum = Number(power);
+
+    // Standard Octopus subscription (Intelligent Octopus, Drive Pack, Octopus Go)
+    let standardSub = 19.88;
+    if (powerNum === 6) standardSub = 15.86;
+    else if (powerNum === 9) standardSub = 19.88;
+    else if (powerNum === 12) standardSub = 23.76;
+    else if (powerNum === 36) standardSub = 54.41;
+
+    // TRV & Cocon & OctoTempo subscription
+    let trvSub = 19.88;
+    if (powerNum === 6) trvSub = 15.86;
+    else if (powerNum === 9) trvSub = 19.88;
+    else if (powerNum === 12) trvSub = 23.76;
+    else if (powerNum === 36) trvSub = 53.88;
+
+    // Eco-Conso Fixe -2% subscription
+    let ecoConsoSub = 20.04;
+    if (powerNum === 6) ecoConsoSub = 16.01;
+    else if (powerNum === 9) ecoConsoSub = 20.04;
+    else if (powerNum === 12) ecoConsoSub = 23.90;
+    else if (powerNum === 36) ecoConsoSub = 54.55;
+
+    // EMCE 2025 subscription
+    let emceSub = 18.95;
     if (offerType === 'base') {
-      if(powerNum === 6) { pSubscription = 15.65; emceSubscription = 14.76; }
-      if(powerNum === 9) { pSubscription = 19.56; emceSubscription = 18.48; }
-      if(powerNum === 12) { pSubscription = 23.32; emceSubscription = 22.19; }
-      if(powerNum === 36) { pSubscription = 53.06; emceSubscription = 51.97; }
+      if (powerNum === 6) emceSub = 15.12;
+      else if (powerNum === 9) emceSub = 18.95;
+      else if (powerNum === 12) emceSub = 22.78;
+      else if (powerNum === 36) emceSub = 53.47;
     } else {
-      if(powerNum === 6) { pSubscription = 15.65; emceSubscription = 15.04; }
-      if(powerNum === 9) { pSubscription = 19.83; emceSubscription = 19.17; }
-      if(powerNum === 12) { pSubscription = 23.68; emceSubscription = 22.99; }
-      if(powerNum === 36) { pSubscription = 52.54; emceSubscription = 51.78; }
+      if (powerNum === 6) emceSub = 15.39;
+      else if (powerNum === 9) emceSub = 19.37;
+      else if (powerNum === 12) emceSub = 23.21;
+      else if (powerNum === 36) emceSub = 53.79;
     }
 
-    const priceBase = powerNum >= 7 ? 0.1895 : 0.1909;
-    const priceHP = 0.2031;
-    const priceHC = 0.1555;
-    const octoGoHP = 0.2132;
-    const octoGoHC = 0.1251;
+    // EDF Tempo subscription
+    let tempoSub = 19.70;
+    if (powerNum === 6) tempoSub = 15.80;
+    else if (powerNum === 9) tempoSub = 19.70;
+    else if (powerNum === 12) tempoSub = 23.50;
+    else if (powerNum === 36) tempoSub = 53.76;
+
+    // Rates Août 2026
+    const ioPriceBase = powerNum >= 7 ? 0.1953 : 0.1968;
+    const ioPriceHP = 0.2106;
+    const ioPriceHC = 0.1565;
+
+    const ecoPriceBase = powerNum >= 7 ? 0.1956 : 0.1971;
+    const ecoPriceHP = 0.2111;
+    const ecoPriceHC = 0.1566;
+
+    const octoGoHP = 0.2302;
+    const octoGoHC = 0.1335;
+
+    const coconRates = offerType === 'base'
+      ? {
+          ete: powerNum >= 7 ? 0.1743 : 0.1707,
+          hiver: powerNum >= 7 ? 0.2277 : 0.2245,
+          base: powerNum >= 7 ? 0.1743 : 0.1707 // fallback
+        }
+      : {
+          eteHC: powerNum >= 7 ? 0.1405 : 0.1344,
+          eteHP: powerNum >= 7 ? 0.1876 : 0.1787,
+          hiverHC: powerNum >= 7 ? 0.1809 : 0.1773,
+          hiverHP: powerNum >= 7 ? 0.2461 : 0.2409,
+          hc: powerNum >= 7 ? 0.1405 : 0.1344, // fallback
+          hp: powerNum >= 7 ? 0.1876 : 0.1787
+        };
+
+    const trvPriceBase = powerNum >= 7 ? 0.1985 : 0.2001;
+    const trvPriceHP = 0.2142;
+    const trvPriceHC = 0.1589;
 
     const baseOffers = [
       {
         id: 'emce-2025',
         name: 'EMCE 2025',
-        subscription: emceSubscription,
-        rates: { base: 0.1627, hp: 0.1727, hc: 0.1376 },
+        subscription: emceSub,
+        rates: { base: 0.1689, hp: 0.1807, hc: 0.1387 },
         bonus: 0,
         flatRate: 0,
         features: ["Achat groupé (UFC-Que Choisir)", "Tarifs très avantageux", "Prix bloqué"]
@@ -79,34 +132,44 @@ function App() {
       {
         id: 'eco-conso',
         name: 'Eco-Conso Fixe -2%',
-        subscription: pSubscription,
-        rates: { base: priceBase, hp: priceHP, hc: priceHC },
+        subscription: ecoConsoSub,
+        rates: { base: ecoPriceBase, hp: ecoPriceHP, hc: ecoPriceHC },
         bonus: 0,
         flatRate: 0,
         features: ["Fixe HT 2 ans (abo + kWh)", "Stabilité totale sur 24 mois", "Pas liée aux VE"]
       },
       {
+        id: 'cocon',
+        name: 'Octopus Cocon',
+        isCocon: true,
+        subscription: trvSub,
+        rates: coconRates,
+        bonus: 0,
+        flatRate: 0,
+        features: ["Tarif saisonnalisé Été / Hiver", "Prix réduit 7 mois sur 12 (Avril - Octobre)", "Fixe HT 2 ans (abo + kWh)"]
+      },
+      {
         id: 'intelligent-octopus',
-        name: 'Intelligent Octopus Fixe Février',
-        subscription: pSubscription,
-        rates: { base: priceBase, hp: priceHP, hc: priceHC },
+        name: 'Intelligent Octopus Fixe Août',
+        subscription: standardSub,
+        rates: { base: ioPriceBase, hp: ioPriceHP, hc: ioPriceHC },
         bonusType: 'intelligent',
         flatRate: 0,
         features: ["Fixe HT 2 ans (abo + kWh + recharge)", "Recharge automatisée par l'app", "Bonus recharge en cagnotte"]
       },
       {
         id: 'drive-pack',
-        name: 'Drive Pack Fixe Avril',
-        subscription: pSubscription,
-        rates: { base: priceBase, hp: priceHP, hc: priceHC },
+        name: 'Drive Pack Fixe Août',
+        subscription: standardSub,
+        rates: { base: ioPriceBase, hp: ioPriceHP, hc: ioPriceHC },
         bonus: 0,
         flatRate: 44.99,
         features: ["Maison : Fixe HT 2 ans (abo + kWh)", "Forfait VE : 1 an, reconductible tacite", "Recharge VE sans limite de dépassement"]
       },
       {
         id: 'octopus-go',
-        name: 'Octopus Go',
-        subscription: pSubscription * 1.1, // Approximated
+        name: 'Octopus Go Fixe',
+        subscription: standardSub,
         rates: { base: octoGoHP, hp: octoGoHP, hc: octoGoHC },
         bonus: 0,
         flatRate: 0,
@@ -115,12 +178,12 @@ function App() {
       {
         id: 'octotempo',
         name: 'OctoTempo',
-        subscription: pSubscription, // Uses base TRV subscription
+        subscription: trvSub,
         isOctoTempo: true,
         rates: {
-          eteHC: 0.1325, eteHP: 0.1575,
-          hiverHC: 0.1575, hiverHP: 0.1871,
-          redHC: 0.1575, redHP: 0.6469
+          eteHC: 0.1356, eteHP: 0.1615,
+          hiverHC: 0.1615, hiverHP: 0.1921,
+          redHC: 0.1615, redHP: 0.6465
         },
         bonus: 0,
         flatRate: 0,
@@ -129,12 +192,12 @@ function App() {
       {
         id: 'edf-tempo',
         name: 'EDF Tempo',
-        subscription: pSubscription * 1.05, // Approximated Tempo sub
+        subscription: tempoSub,
         isTempo: true,
         rates: {
-          blueHC: 0.1296, blueHP: 0.1609,
-          whiteHC: 0.1486, whiteHP: 0.1894,
-          redHC: 0.1568, redHP: 0.7562
+          blueHC: 0.1356, blueHP: 0.1654,
+          whiteHC: 0.1536, whiteHP: 0.1921,
+          redHC: 0.1615, redHP: 0.7295
         },
         bonus: 0,
         flatRate: 0,
@@ -143,17 +206,26 @@ function App() {
       {
         id: 'edf-tempo-100hc',
         name: 'EDF Tempo (100% HC)',
-        subscription: pSubscription * 1.05, // Approximated Tempo sub
+        subscription: tempoSub,
         isTempo: true,
         isTempo100HC: true,
         rates: {
-          blueHC: 0.1296, blueHP: 0.1609,
-          whiteHC: 0.1486, whiteHP: 0.1894,
-          redHC: 0.1568, redHP: 0.7562
+          blueHC: 0.1356, blueHP: 0.1654,
+          whiteHC: 0.1536, whiteHP: 0.1921,
+          redHC: 0.1615, redHP: 0.7295
         },
         bonus: 0,
         flatRate: 0,
         features: ["Variante 100% Heures Creuses", "Recharge VE de nuit uniquement", "Aucune recharge en journée"]
+      },
+      {
+        id: 'edf-bleu',
+        name: 'EDF Tarif Bleu (TRV)',
+        subscription: trvSub,
+        rates: { base: trvPriceBase, hp: trvPriceHP, hc: trvPriceHC },
+        bonus: 0,
+        flatRate: 0,
+        features: ["Tarif Réglementé de Vente", "Fixé par les pouvoirs publics", "Tarif repère national"]
       }
     ];
 
@@ -231,6 +303,36 @@ function App() {
         
         optRate = offer.rates.eteHC;
         normRate = offer.rates.hiverHP;
+      } else if (offer.isCocon) {
+        // Octopus Cocon : saisonnalité Été (Avril - Octobre = 214 j) / Hiver (Novembre - Mars = 151 j)
+        const daysInYear = 365;
+        const ratioEte = 214 / daysInYear;
+        const ratioHiver = 151 / daysInYear;
+
+        if (offerType === 'base') {
+          homeCost = (finalHomeConsumption * ratioEte * offer.rates.ete) + (finalHomeConsumption * ratioHiver * offer.rates.hiver);
+          evCostRaw = (yearlyEvConsumption * ratioEte * offer.rates.ete) + (yearlyEvConsumption * ratioHiver * offer.rates.hiver);
+          evCostFinal = evCostRaw;
+
+          optKwh = (yearlyEvConsumption * 0.8) / 12;
+          normKwh = (yearlyEvConsumption * 0.2) / 12;
+          optRate = (ratioEte * offer.rates.ete) + (ratioHiver * offer.rates.hiver);
+          normRate = optRate;
+        } else {
+          homeCost = 
+            (homeHC * ratioEte * offer.rates.eteHC) + (homeHP * ratioEte * offer.rates.eteHP) +
+            (homeHC * ratioHiver * offer.rates.hiverHC) + (homeHP * ratioHiver * offer.rates.hiverHP);
+          
+          evCostRaw = 
+            (evHC * ratioEte * offer.rates.eteHC) + (evHP * ratioEte * offer.rates.eteHP) +
+            (evHC * ratioHiver * offer.rates.hiverHC) + (evHP * ratioHiver * offer.rates.hiverHP);
+          evCostFinal = evCostRaw;
+
+          optRate = (ratioEte * offer.rates.eteHC) + (ratioHiver * offer.rates.hiverHC);
+          normRate = (ratioEte * offer.rates.eteHP) + (ratioHiver * offer.rates.hiverHP);
+        }
+
+        cost = annualSub + homeCost + evCostFinal;
       } else if (offerType === 'hphc' || offer.id === 'octopus-go') {
         homeCost = (homeHC * offer.rates.hc) + (homeHP * offer.rates.hp);
         evCostRaw = (evHC * offer.rates.hc) + (evHP * offer.rates.hp);

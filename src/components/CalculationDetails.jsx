@@ -9,6 +9,7 @@ function CalculationDetails({ power, homeConsumption, homeHpRatio, yearlyEvConsu
   const tempo100Hc = offers.find(o => o.id === 'edf-tempo-100hc');
   const octopus = offers.find(o => o.id === 'intelligent-octopus');
   const octotempo = offers.find(o => o.id === 'octotempo');
+  const cocon = offers.find(o => o.id === 'cocon');
 
   if (!tempo || !octopus || !octotempo || !tempo100Hc) return null;
 
@@ -27,6 +28,12 @@ function CalculationDetails({ power, homeConsumption, homeHpRatio, yearlyEvConsu
   // OctoTempo Averages
   const octoAvgHc = (214/daysInYear * octotempo.rates.eteHC) + (129/daysInYear * octotempo.rates.hiverHC) + (22/daysInYear * octotempo.rates.redHC);
   const octoAvgHp = (214/daysInYear * octotempo.rates.eteHP) + (129/daysInYear * octotempo.rates.hiverHP) + (22/daysInYear * octotempo.rates.redHP);
+
+  // Cocon Averages
+  const coconIsBase = cocon?.rates?.ete !== undefined;
+  const coconAvgHc = cocon?.rates?.eteHC ? ((214/daysInYear * cocon.rates.eteHC) + (151/daysInYear * cocon.rates.hiverHC)) : 0;
+  const coconAvgHp = cocon?.rates?.eteHP ? ((214/daysInYear * cocon.rates.eteHP) + (151/daysInYear * cocon.rates.hiverHP)) : 0;
+  const coconAvgBase = cocon?.rates?.ete ? ((214/daysInYear * cocon.rates.ete) + (151/daysInYear * cocon.rates.hiver)) : 0;
 
   // Octopus calculations for detail
   const octopusHomeHpCost = homeHpKwh * octopus.rates.hp;
@@ -167,7 +174,7 @@ function CalculationDetails({ power, homeConsumption, homeHpRatio, yearlyEvConsu
       {/* ---------------- OCTOTEMPO ---------------- */}
       <button 
         onClick={() => toggleSection('octotempo')}
-        style={{...getButtonStyles('octotempo'), borderBottom: openSection === 'octotempo' ? '1px solid #e2e8f0' : 'none'}}
+        style={getButtonStyles('octotempo')}
       >
         <span>📊 Détail des Calculs : OctoTempo vs Intelligent Octopus</span>
         <span style={{ fontSize: '1.5rem', color: '#64748b' }}>{openSection === 'octotempo' ? '−' : '+'}</span>
@@ -221,6 +228,60 @@ function CalculationDetails({ power, homeConsumption, homeHpRatio, yearlyEvConsu
             <li>Tout comme pour EDF Tempo, le tarif garanti à 0,08 € / kWh de la recharge via l'algorithme Octopus creuse considérablement l'écart en faveur de l'offre Intelligent Octopus pour un propriétaire de véhicule électrique.</li>
           </ul>
         </div>
+      )}
+
+      {/* ---------------- OCTOPUS COCON ---------------- */}
+      {cocon && (
+        <>
+          <button 
+            onClick={() => toggleSection('cocon')}
+            style={{...getButtonStyles('cocon'), borderBottom: openSection === 'cocon' ? '1px solid #e2e8f0' : 'none'}}
+          >
+            <span>🪺 Détail des Calculs : Octopus Cocon Saisonnalisé</span>
+            <span style={{ fontSize: '1.5rem', color: '#64748b' }}>{openSection === 'cocon' ? '−' : '+'}</span>
+          </button>
+
+          {openSection === 'cocon' && (
+            <div style={{ padding: '2rem', color: '#334155', lineHeight: '1.6', fontSize: '0.95rem' }}>
+              <p><em>L'offre Cocon propose 2 saisons tarifaires : un tarif très bas en Été (7 mois) pour compenser les mois d'hiver (5 mois).</em></p>
+              
+              <hr style={{ margin: '1.5rem 0', borderColor: '#e2e8f0' }} />
+
+              <h3 style={{ color: '#0f172a', marginBottom: '1rem' }}>1. Saisonnalité de l'offre Cocon</h3>
+              <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
+                <li><strong>Période Été (Avril à Octobre inclus) :</strong> 214 jours sur 365, soit <strong>58,63% de l'année</strong>.</li>
+                <li><strong>Période Hiver (Novembre à Mars inclus) :</strong> 151 jours sur 365, soit <strong>41,37% de l'année</strong>.</li>
+              </ul>
+
+              <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Prix moyen lissé sur l'année</h4>
+              {coconIsBase ? (
+                <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
+                  <li>Été : {cocon.rates.ete} € / kWh</li>
+                  <li>Hiver : {cocon.rates.hiver} € / kWh</li>
+                  <li><strong>Moyenne annuelle lissée</strong> = (58,63% × {cocon.rates.ete}) + (41,37% × {cocon.rates.hiver}) = <strong>{coconAvgBase.toFixed(5)} € / kWh</strong></li>
+                </ul>
+              ) : (
+                <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
+                  <li>Été HC : {cocon.rates.eteHC} € / Été HP : {cocon.rates.eteHP} €</li>
+                  <li>Hiver HC : {cocon.rates.hiverHC} € / Hiver HP : {cocon.rates.hiverHP} €</li>
+                  <li><strong>Moyenne HC annuelle lissée</strong> = (58,63% × {cocon.rates.eteHC}) + (41,37% × {cocon.rates.hiverHC}) = <strong>{coconAvgHc.toFixed(5)} € / kWh</strong></li>
+                  <li><strong>Moyenne HP annuelle lissée</strong> = (58,63% × {cocon.rates.eteHP}) + (41,37% × {cocon.rates.hiverHP}) = <strong>{coconAvgHp.toFixed(5)} € / kWh</strong></li>
+                </ul>
+              )}
+
+              <h4 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Facture annuelle Cocon</h4>
+              <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
+                <li><strong>Abonnement ({power} kVA) :</strong> {(cocon.breakdown.monthlySub * 12).toFixed(2)} € / an</li>
+                <li><strong>Maison :</strong> {(cocon.breakdown.monthlyHomeCost * 12).toFixed(2)} € / an</li>
+                <li><strong>Véhicule (VE) :</strong> {(cocon.breakdown.monthlyEvCostRaw * 12).toFixed(2)} € / an</li>
+              </ul>
+              <div style={{ backgroundColor: '#f1f5f9', padding: '1rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                TOTAL ANNUEL COCON : {cocon.totalCost.toFixed(2)} €<br/>
+                MENSUALITÉ LISSÉE COCON : {cocon.breakdown.monthlyNetTotal.toFixed(2)} € / mois
+              </div>
+            </div>
+          )}
+        </>
       )}
 
     </div>
