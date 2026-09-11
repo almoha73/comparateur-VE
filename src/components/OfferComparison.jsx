@@ -19,7 +19,7 @@ function OfferComparison({ offers, selectedOfferId, offerType }) {
                     {offer.id === 'cocon' && '🪺 '}
                     {offer.id === 'intelligent-octopus' && '🐙 '}
                     {offer.id === 'octopus-go' && '🚙 '}
-                    {offer.id === 'eco-conso' && '💡 '}
+                    {(offer.id === 'eco-conso' || offer.id === 'eco-conso-5' || offer.id === 'eco-conso-2') && '💡 '}
                     {offer.id === 'emce-2025' && '🤝 '}
                     {offer.id === 'octotempo' && '📅 '}
                     {offer.id === 'drive-pack' && '🚘 '}

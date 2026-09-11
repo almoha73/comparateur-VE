@@ -60,7 +60,7 @@ function App() {
     else if (powerNum === 12) trvSub = 23.76;
     else if (powerNum === 36) trvSub = 53.88;
 
-    // Eco-Conso Fixe -2% subscription
+    // Eco-Conso Fixe -5% subscription
     let ecoConsoSub = 20.04;
     if (powerNum === 6) ecoConsoSub = 16.01;
     else if (powerNum === 9) ecoConsoSub = 20.04;
@@ -88,14 +88,20 @@ function App() {
     else if (powerNum === 12) tempoSub = 23.50;
     else if (powerNum === 36) tempoSub = 53.76;
 
-    // Rates Août 2026
+    // Rates Août / Septembre 2026
     const ioPriceBase = powerNum >= 7 ? 0.1953 : 0.1968;
     const ioPriceHP = 0.2106;
     const ioPriceHC = 0.1565;
 
-    const ecoPriceBase = powerNum >= 7 ? 0.1956 : 0.1971;
-    const ecoPriceHP = 0.2111;
-    const ecoPriceHC = 0.1566;
+    // Eco-conso Fixe -5% (Grille applicable au 11/09/2026)
+    const eco5PriceBase = powerNum >= 7 ? 0.1911 : 0.1924;
+    const eco5PriceHP = 0.2059;
+    const eco5PriceHC = 0.1530;
+
+    // Eco-conso Fixe -2% (Grille applicable au 04/09/2026)
+    const eco2PriceBase = powerNum >= 7 ? 0.1956 : 0.1971;
+    const eco2PriceHP = 0.2111;
+    const eco2PriceHC = 0.1566;
 
     const octoGoHP = 0.2302;
     const octoGoHC = 0.1335;
@@ -130,13 +136,22 @@ function App() {
         features: ["Achat groupé (UFC-Que Choisir)", "Tarifs très avantageux", "Prix bloqué"]
       },
       {
-        id: 'eco-conso',
-        name: 'Eco-Conso Fixe -2%',
+        id: 'eco-conso-5',
+        name: 'Eco-Conso Fixe -5%',
         subscription: ecoConsoSub,
-        rates: { base: ecoPriceBase, hp: ecoPriceHP, hc: ecoPriceHC },
+        rates: { base: eco5PriceBase, hp: eco5PriceHP, hc: eco5PriceHC },
         bonus: 0,
         flatRate: 0,
-        features: ["Fixe HT 2 ans (abo + kWh)", "Stabilité totale sur 24 mois", "Pas liée aux VE"]
+        features: ["Fixe HT 2 ans (abo + kWh)", "Remise de 5% sur le kWh HT", "Pas liée aux VE"]
+      },
+      {
+        id: 'eco-conso-2',
+        name: 'Eco-Conso Fixe -2%',
+        subscription: ecoConsoSub,
+        rates: { base: eco2PriceBase, hp: eco2PriceHP, hc: eco2PriceHC },
+        bonus: 0,
+        flatRate: 0,
+        features: ["Fixe HT 2 ans (abo + kWh)", "Remise de 2% sur le kWh HT", "Pas liée aux VE"]
       },
       {
         id: 'cocon',

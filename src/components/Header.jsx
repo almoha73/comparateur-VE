@@ -24,7 +24,7 @@ function Header({ power, setPower, offerType, setOfferType }) {
           backgroundColor: '#10b981',
           boxShadow: '0 0 8px #10b981'
         }}></span>
-        Site à jour avec les derniers tarifs d'août 2026
+        Site à jour avec les derniers tarifs de septembre 2026
       </div>
 
       <h1>Comparateur d'offres VE</h1>

@@ -70,7 +70,7 @@ function OfferChart({ offers }) {
           if (offer.id === 'cocon') icon = '🪺';
           if (offer.id === 'intelligent-octopus') icon = '🐙';
           if (offer.id === 'octopus-go') icon = '🚙';
-          if (offer.id === 'eco-conso') icon = '💡';
+          if (offer.id === 'eco-conso' || offer.id === 'eco-conso-5' || offer.id === 'eco-conso-2') icon = '💡';
           if (offer.id === 'emce-2025') icon = '🤝';
           if (offer.id === 'octotempo') icon = '📅';
           if (offer.id === 'drive-pack') icon = '🚘';
