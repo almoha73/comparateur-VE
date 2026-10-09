@@ -67,6 +67,20 @@ function App() {
     else if (powerNum === 12) ecoConsoSub = 23.90;
     else if (powerNum === 36) ecoConsoSub = 54.55;
 
+    // Eco-conso Fixe -12% subscription
+    let eco12Sub = 19.39;
+    if (offerType === 'base') {
+      if (powerNum === 6) eco12Sub = 15.13;
+      else if (powerNum === 9) eco12Sub = 18.97;
+      else if (powerNum === 12) eco12Sub = 22.80;
+      else if (powerNum === 36) eco12Sub = 53.51;
+    } else {
+      if (powerNum === 6) eco12Sub = 15.41;
+      else if (powerNum === 9) eco12Sub = 19.39;
+      else if (powerNum === 12) eco12Sub = 23.23;
+      else if (powerNum === 36) eco12Sub = 53.83;
+    }
+
     // EMCE 2025 subscription
     let emceSub = 18.95;
     if (offerType === 'base') {
@@ -103,6 +117,11 @@ function App() {
     const eco2PriceHP = 0.2111;
     const eco2PriceHC = 0.1566;
 
+    // Eco-conso Fixe -12% (Grille applicable au 09/10/2026)
+    const eco12PriceBase = 0.1834;
+    const eco12PriceHP = 0.1965;
+    const eco12PriceHC = 0.1504;
+
     const octoGoHP = 0.2302;
     const octoGoHC = 0.1335;
 
@@ -134,6 +153,15 @@ function App() {
         bonus: 0,
         flatRate: 0,
         features: ["Achat groupé (UFC-Que Choisir)", "Tarifs très avantageux", "Prix bloqué"]
+      },
+      {
+        id: 'eco-conso-12',
+        name: 'Eco-Conso Fixe -12%',
+        subscription: eco12Sub,
+        rates: { base: eco12PriceBase, hp: eco12PriceHP, hc: eco12PriceHC },
+        bonus: 0,
+        flatRate: 0,
+        features: ["Fixe HT 2 ans (abo + kWh)", "Remise de 12% sur le kWh HT", "Pas liée aux VE"]
       },
       {
         id: 'eco-conso-5',
